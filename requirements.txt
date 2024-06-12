@@ -1,0 +1,10 @@
+traitlets
+pytest
+pytest-dotenv
+numpy
+pillow
+pyserial
+opencv-python
+pydantic
+pydantic-settings
+pyaml
