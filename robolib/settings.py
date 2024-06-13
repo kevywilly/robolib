@@ -27,9 +27,13 @@ def numpy_float(value: np.ndarray) -> np.ndarray:
     return convert_numpy(value).astype(float)
 
 
+def numpy_radians(value: np.ndarray) -> np.ndarray:
+    return np.radians(convert_numpy(value)).astype(float)
+
+
 NumpyInt = Annotated[np.ndarray, BeforeValidator(numpy_int)]
 NumpyFloat = Annotated[np.ndarray, BeforeValidator(numpy_float)]
-
+NumpyRadians = Annotated[np.ndarray, BeforeValidator(numpy_radians)]
 
 def load_config(config_file) -> Dict:
     with open(config_file, 'r') as f:
@@ -99,7 +103,7 @@ class Quadruped(BaseModel):
 
     dims: QDimensions = QDimensions()
     servo_ids: Optional[NumpyInt] = np.zeros((1, 12))
-    actuator_angle_zero: Optional[NumpyInt] = np.zeros((4, 3))
+    actuator_angle_zero: Optional[NumpyRadians] = np.zeros((4, 3))
     actuator_angle_flip: Optional[NumpyInt] = np.zeros((4, 3)) + 1
     ready_position_height_pct: Optional[float] = 0.5
     ready_position_offsets: Optional[NumpyInt] = np.zeros((4, 3))
@@ -163,6 +167,7 @@ class AppSettings(BaseSettings):
         return load_config(config_file=self.config_file)
 
     @computed_field
+    @property
     def quadruped(self) -> Optional[Quadruped]:
         return Quadruped.model_validate(self.config.get('quadruped', {}))
 
