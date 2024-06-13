@@ -35,6 +35,7 @@ NumpyInt = Annotated[np.ndarray, BeforeValidator(numpy_int)]
 NumpyFloat = Annotated[np.ndarray, BeforeValidator(numpy_float)]
 NumpyRadians = Annotated[np.ndarray, BeforeValidator(numpy_radians)]
 
+
 def load_config(config_file) -> Dict:
     with open(config_file, 'r') as f:
         return yaml.safe_load(f)
@@ -49,6 +50,7 @@ class NumpyArray(BaseModel):
     data: list
 
     @computed_field
+    @property
     def numpy(self) -> np.ndarray:
         return np.array(self.data).reshape(self.rows, self.cols)
 
@@ -110,26 +112,32 @@ class Quadruped(BaseModel):
     home_position_offsets: Optional[NumpyInt] = np.zeros((4, 3))
 
     @computed_field
+    @property
     def servos(self) -> np.ndarray:
         return np.array(self.servo_ids).reshape(4, 3)
 
+    @computed_field()
     @property
     def max_height(self) -> float:
         return self.dims.femur + self.dims.tibia
 
+    @computed_field()
     @property
     def lengths(self) -> np.ndarray:
-        return np.array([self.coxa, self.femur, self.tibia])
+        return np.array([self.dims.coxa, self.dims.femur, self.dims.tibia])
 
     @computed_field
+    @property
     def position_home(self) -> np.ndarray:
         return np.zeros((4, 3)).astype(np.float16) + [0, 0, self.max_height] + self.home_position_offsets
 
     @computed_field
+    @property
     def position_ready(self) -> np.ndarray:
         return (self.ready_position_height_pct * self.position_home) + self.ready_position_offsets
 
     @computed_field
+    @property
     def position_crouch(self) -> np.ndarray:
         return self.position_ready * 0.4
 
@@ -159,10 +167,12 @@ class AppSettings(BaseSettings):
     config_file: str = '/users/kevywilly/Projects/robolib/config.yaml'
 
     @computed_field
+    @property
     def serial_port(self) -> str:
         return self.config.get("serial_port", "/dev/serial0")
 
     @computed_field
+    @property
     def config(self) -> Dict:
         return load_config(config_file=self.config_file)
 
@@ -172,10 +182,12 @@ class AppSettings(BaseSettings):
         return Quadruped.model_validate(self.config.get('quadruped', {}))
 
     @computed_field
+    @property
     def imu(self) -> Optional[ImuSettings]:
         return ImuSettings.model_validate(self.config.get('imu', {}))
 
     @computed_field
+    @property
     def camera(self) -> CameraSettings:
         return CameraSettings.model_validate(self.config.get("camera", {}))
 
