@@ -69,9 +69,9 @@ class ImuOffsets(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    magnetic: Optional[Tuple] = (0, 0, 0)
-    gyro: Optional[Tuple] = (0, 0, 0)
-    accel: Optional[Tuple] = (0, 0, 0)
+    magnetic: Optional[Tuple[int, int, int]] = (0, 0, 0)
+    gyro: Optional[Tuple[int, int, int]] = (0, 0, 0)
+    accel: Optional[Tuple[int, int, int]] = (0, 0, 0)
 
 
 class ImuSettings(BaseModel):
