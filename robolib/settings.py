@@ -12,14 +12,23 @@ from robolib.vision.sensors import CameraSensor
 
 def convert_numpy(value: Any) -> np.ndarray:
     if isinstance(value, Dict):
-        return NPArray.model_validate(value).numpy
+        return NumpyArray.model_validate(value).numpy
     elif isinstance(value, np.ndarray):
         return value
     else:
         raise ValidationError(f"Invalid type {type(value)} for conversion to np.ndarray via NPArray")
 
 
-ValidNumpy = Annotated[np.ndarray, BeforeValidator(convert_numpy)]
+def numpy_int(value: np.ndarray) -> np.ndarray:
+    return convert_numpy(value).astype(int)
+
+
+def numpy_float(value: np.ndarray) -> np.ndarray:
+    return convert_numpy(value).astype(float)
+
+
+NumpyInt = Annotated[np.ndarray, BeforeValidator(numpy_int)]
+NumpyFloat = Annotated[np.ndarray, BeforeValidator(numpy_float)]
 
 
 def load_config(config_file) -> Dict:
@@ -27,7 +36,7 @@ def load_config(config_file) -> Dict:
         return yaml.safe_load(f)
 
 
-class NPArray(BaseModel):
+class NumpyArray(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
@@ -41,7 +50,7 @@ class NPArray(BaseModel):
 
     @classmethod
     def zeros(cls, rows: int, cols: int):
-        return NPArray(
+        return NumpyArray(
             rows=rows,
             cols=cols,
             data=list(np.zeros((rows, cols)).flatten())
@@ -49,7 +58,7 @@ class NPArray(BaseModel):
 
     @classmethod
     def fill(cls, rows: int, cols: int, value: any):
-        return NPArray(
+        return NumpyArray(
             rows=rows,
             cols=cols,
             data=list(np.zeros((rows, cols)).flatten() + value)
@@ -89,12 +98,12 @@ class Quadruped(BaseModel):
         arbitrary_types_allowed = True
 
     dims: QDimensions = QDimensions()
-    servo_ids: Optional[ValidNumpy] = np.zeros((1, 12))
-    actuator_angle_zero: Optional[ValidNumpy] = np.zeros((4, 3))
-    actuator_angle_flip: Optional[ValidNumpy] = np.zeros((4, 3)) + 1
+    servo_ids: Optional[NumpyInt] = np.zeros((1, 12))
+    actuator_angle_zero: Optional[NumpyInt] = np.zeros((4, 3))
+    actuator_angle_flip: Optional[NumpyInt] = np.zeros((4, 3)) + 1
     ready_position_height_pct: Optional[float] = 0.5
-    ready_position_offsets: Optional[ValidNumpy] = np.zeros((4, 3))
-    home_position_offsets: Optional[ValidNumpy] = np.zeros((4, 3))
+    ready_position_offsets: Optional[NumpyInt] = np.zeros((4, 3))
+    home_position_offsets: Optional[NumpyInt] = np.zeros((4, 3))
 
     @computed_field
     def servos(self) -> np.ndarray:
@@ -127,11 +136,11 @@ class CameraCalibration(BaseModel):
 
     image_width: Optional[int] = 1640
     image_height: Optional[int] = 1232
-    camera_matrix: Optional[ValidNumpy] = np.zeros((3, 3))
+    camera_matrix: Optional[NumpyFloat] = np.zeros((3, 3))
     distortion_model: Optional[str] = "plumb_bob"
-    distortion_coefficients: Optional[ValidNumpy] = np.zeros((1, 5))
-    rectification_matrix: Optional[ValidNumpy] = np.zeros((3, 3))
-    projection_matrix: Optional[ValidNumpy] = np.zeros((3, 4))
+    distortion_coefficients: Optional[NumpyFloat] = np.zeros((1, 5))
+    rectification_matrix: Optional[NumpyFloat] = np.zeros((3, 3))
+    projection_matrix: Optional[NumpyFloat] = np.zeros((3, 4))
 
 
 class CameraSettings(BaseModel):
