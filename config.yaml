@@ -52,19 +52,9 @@ imu:
     - 0
     - 1
   offsets:
-    magnetic:
-      - 419
-      - -250
-      - -597
-    gyro:
-      - 0,
-      - -2,
-      - -1
-    accel:
-      - 16,
-      - -31,
-      - 14
-
+    magnetic: [419, -250, -597]
+    gyro: [0,-2,-1]
+    accel: [16,-31,14]
 camera:
   sensor_mode: 3
   calibration:
