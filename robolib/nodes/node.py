@@ -16,7 +16,6 @@ class Node(Configurable):
 
     def __init__(self, *args, **kwargs):
         super(Node, self).__init__(*args, **kwargs)
-        self._loading()
         self._thread = None
         self._running = False
         atexit.register(self._shutdown)
