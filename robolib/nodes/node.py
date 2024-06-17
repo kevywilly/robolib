@@ -21,13 +21,13 @@ class Node(Configurable):
         atexit.register(self._shutdown)
 
     def _loading(self):
-        pretty(f"Loading {self.__class__.__name__} Node")
+        print(f"Loading {self.__class__.__name__} Node")
 
     def _loaded(self):
-        pretty(f"Loaded {self.__class__.__name__} Node")
+        print(f"Loaded {self.__class__.__name__} Node")
 
     def _started(self):
-        pretty(f"{self.__class__.__name__} Node is running at {self.frequency} HZ")
+        print(f"{self.__class__.__name__} Node is running at {self.frequency} HZ")
 
     @abstractmethod
     def spinner(self):
